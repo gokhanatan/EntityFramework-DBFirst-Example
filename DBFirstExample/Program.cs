@@ -10,6 +10,52 @@ namespace DBFirstExample
     {
         static void Main(string[] args)
         {
+
+
+            using (var context = new NorthwindEntities())
+            {
+                var result = from prod in context.Products
+                             join cat in context.Categories
+                                on prod.CategoryID equals cat.CategoryID
+                             group new { prod, cat }
+                                by new { cat.CategoryName, prod.Discontinued }
+                             into g
+                             select new
+                             {
+                                 KategoriAdi = g.Key.CategoryName,
+                                 İndirimlimi = g.Key.Discontinued,
+                                 ToplamFiyat = g.Sum(x => x.prod.UnitPrice)
+                             };
+
+                foreach (var item in result)
+                {
+                    Console.WriteLine(" KategoriAdi: " + item.KategoriAdi +
+                        " İndirimli mi: " + item.İndirimlimi +
+                        " ToplamFiyat: " + item.ToplamFiyat);
+                }
+            }
+
+
+            //using (var context = new NorthwindEntities())
+            //{
+            //    var result = from prod in context.Products
+            //                 group prod by prod.CategoryID into g
+            //                 select new
+            //                 {
+            //                     KategoriID = g.Key,
+            //                     UrunAdedi = g.Count()
+            //                 };
+
+            //    foreach (var item in result)
+            //    {
+            //        Console.WriteLine(" KategoriID: " + item.KategoriID + 
+            //            " UrunAdedi: "+item.UrunAdedi);
+            //    }
+            //}
+
+
+            //LinqJoinOperasyonu();
+
             //LinqSimpleQuery5();
 
             //LinqSimpleQuery4();
@@ -31,6 +77,33 @@ namespace DBFirstExample
 
             Console.ReadLine();
 
+        }
+
+        private static void LinqJoinOperasyonu()
+        {
+            using (var context = new NorthwindEntities())
+            {
+                var result = from prod in context.Products
+                             join cat in context.Categories
+                                on prod.CategoryID equals cat.CategoryID
+                             where prod.UnitPrice > 75
+                             select new
+                             {
+                                 KategoriAdi = cat.CategoryName,
+                                 UrunID = prod.ProductID,
+                                 UrunAdi = prod.ProductName,
+                                 UrunFiyati = prod.UnitPrice
+                             };
+
+                foreach (var item in result)
+                {
+                    Console.WriteLine("KategoriAdi: " + item.KategoriAdi +
+                        " UrunID: " + item.UrunID +
+                        " UrunAdi: " + item.UrunAdi +
+                        " UrunFiyati: " + item.UrunFiyati);
+                }
+
+            }
         }
 
         private static void LinqSimpleQuery5()
